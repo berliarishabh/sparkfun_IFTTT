@@ -16,29 +16,28 @@ setupRouter.route('/')
 .post(function(req,res,next){
 
 if(req.headers['ifttt-channel-key']==key){
-  var jsonData;
-        console.log('B');
+    var jsonData;
+          console.log('B');
 
-  fs.readFile(jsonFile, 'utf8', function (err, data) {
-    if (err)
-    {
-        console.log('C');
+    fs.readFile(jsonFile, 'utf8', function (err, data) {
+      if (err)
+      {
+          console.log('C');
 
-       throw err;
-    }
-    jsonData = JSON.parse(data);
-  })
-console.log('D');
+         throw err;
+      }
+      jsonData = JSON.parse(data);
+    })
+//console.log('D');
 
   res.writeHead(200,{ 'Content-Type': 'application/json; charset=utf-8' });
-console.log('E');
-
-console.log(jsonData);
+//console.log('E');
+  console.log(jsonData);
  // res.end(JSON.stringify(jsonData, null, 3));
-res.end(JSON.stringify({
+  res.end(JSON.stringify({
   "data": {
     "samples": {
-"triggers": {
+  "triggers": {
         "new_data": {
           "value": "fields",
           "relationship": "rel"
@@ -48,7 +47,7 @@ res.end(JSON.stringify({
     }
   }
   }, null, 3));
-}
+  }
 
 else{
   res.writeHead(401,{'Content-Type': 'text/plain'});
