@@ -15,6 +15,7 @@ triggerRouter.route('/')
   .all(function(req,res,next){
     next();
   })
+
   .post(function(req,res,next){
 
     console.log('POST');
@@ -26,55 +27,48 @@ triggerRouter.route('/')
     console.log(req.headers);
 
     if(req.headers['ifttt-channel-key']==keyi){
-//      console.log('lalalalal');
-//      console.log(req.body.triggerFields.relationship);
-//      console.log(req.body.triggerFields.value);
+    //      console.log('lalalalal');
+    //      console.log(req.body.triggerFields.relationship);
+    //      console.log(req.body.triggerFields.value);
 
         if(!(req.body.triggerFields && req.body.triggerFields.value && req.body.triggerFields.relationship)){
 
         res.status(400).jsonp({"errors": [{ "message": "Something went wrong!" }]});
-}
+    }
 
-else{
+    else{
     request("https://data.sparkfun.com/output/n1rW4K9n1DuloGzNrW44.json", {method: 'GET'}, function (err, response, body){
+        //console.log(res.body);
+        phantdata = JSON.parse(response.body);
+        var count=0;
 
-            //console.log(res.body);
-            phantdata = JSON.parse(response.body);
-            var count=0;
+        phantdata.forEach(function(d){
+            temp = {};
+            temp.value={};
 
+            for (var prop in d) {
+            // var key = prop;
 
+            if (prop == 'timestamp')
+            {
+            temp[prop] = d[prop];}
+            else {
 
-                phantdata.forEach(function(d){
-                    temp = {};
-                    temp.value={};
+            //  temp["value"]={};
+            temp.value[prop]=d[prop];
+            temp.value.id=idgen(12);
 
-                    for (var prop in d) {
-                    // var key = prop;
+            }
+            temp["meta"]={};
+            temp["meta"].id=idgen(16);
+            temp["meta"].timestamp=parseInt((Date.now()/1000))
 
-                    if (prop == 'timestamp')
-                    {
-                    temp[prop] = d[prop];}
-                    else {
-
-                    //  temp["value"]={};
-                    temp.value[prop]=d[prop];
-                    temp.value.id=idgen(12);
-
-                    }
-                temp["meta"]={};
-                temp["meta"].id=idgen(16);
-                temp["meta"].timestamp=parseInt((Date.now()/1000))
-
-
-                count++;
-        }
-
-
+            count++;
+    }
           i_data.data.push(temp);
+});
 
-        });
-
-       i_data.data.sort(function(a,b){
+          i_data.data.sort(function(a,b){
           if (a.meta.timestamp > b.meta.timestamp) {
             return -1;
           } else if (a.meta.timestamp < b.meta.timestamp) {
@@ -82,41 +76,41 @@ else{
           }
 
           return 0;
-        });
+          });
 
-        //console.log(i_data);
+//console.log(i_data);
 
-        //console.log('modified data');
+//console.log('modified data');
 
-        //res.end(JSON.stringify(i_data));
+//res.end(JSON.stringify(i_data));
 
-        var limit = req.body.limit;
+          var limit = req.body.limit;
 
-        res.status(200);
+          res.status(200);
 
-        switch(limit)
-        {
-          case 0:
-            res.jsonp({"data": []});
-          break;
-          case 1:
-            res.jsonp({"data": [i_data.data[0]]});
-          break;
-          default:
-            res.jsonp(i_data);
-        }
+          switch(limit)
+          {
+            case 0:
+              res.jsonp({"data": []});
+            break;
+            case 1:
+              res.jsonp({"data": [i_data.data[0]]});
+            break;
+            default:
+              res.jsonp(i_data);
+          }
 
-      });
+          });
 
     }
 }
-         else { // Invalid key
+        else { // Invalid key
 
-      console.log('invalid key');
-      
-       res.status(401).jsonp({"errors": [{ "message": "Something went wrong!" }]});
+        console.log('invalid key');
 
-    }
+        res.status(401).jsonp({"errors": [{ "message": "Something went wrong!" }]});
+
+        }
 
 });
 
