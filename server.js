@@ -20,7 +20,7 @@ app.use(bodyParser.json());//If the body of the incoming request message contain
 app.use(morgan('dev'));           //That is the web app will use a middle-ware called morgan. 'dev' is one of the preformatted log outputs that morgan supports
                                   //It parses other types of data like forms etc
 
-app.use('/ifttt/v1/status',statusRouter);        //If the user contains /dishes apply dishRouter application
+app.use('/ifttt/v1/status',statusRouter);        //If the user contains /status apply statusRouter application
 app.use('/ifttt/v1/test/setup',setupRouter);
 app.use('/ifttt/v1/triggers/new_data',triggerRouter);
 app.use('/ifttt/v1/triggers/new_data/fields/value/options', optionsRouter);
